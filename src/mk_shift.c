@@ -9,34 +9,26 @@
 ** Given a character with k discrete states and set X of terminal node
 ** character states related by phylogeny T, we assume that the character
 ** has evolved on T to produce X under a fully symmetric Markov
-** process of character state evolution with rate r. Given a history
-** H of character state change, the probability of X,H can be calculated
-** as
+** process of character state evolution with rate r. Assuming a rate of
+** evolution slow enough that the expected number of character state
+** changes on any given branch of T is typically much less than 1, the
+** log probability of X is approximately
 **
-** P(X, H | r, T) =
-**   prod_{interval i over which a state change occurs} r * exp(-r * v_i) / (k-1)
-**   prod_{interval i over which no state change occurs} exp(-r * v_i)
+** log P(x) ~ N * log(r) - r * V + const
 **
-** where v_i denotes the length of an interval. This simplifies to
+** where the constant includes terms that do not depend on r. Here, V is the
+** sum of all branch lengths in T and N is the minimum number of character 
+** state changes needed to explain X, which is readily computed via Fitch 
+** parsimony.
+** 
+** The maximum likelihood estimate of r is then simply N / V.
 **
-** P(X, H | r, T) = (r / (k-1))^n * exp(-r * V)
-**
-** where n is the number of character state changes and V is the sum of all
-** interval lengths (which is equal to the sum of all branch lengths in T).
-**
-** For (r / (k-1)) < 1 this probability decreasing monotonically with increasing
-** n. Therefore, the maximum a posteriori estimate of n is the mininum number
-** of character state changes needed to explain the data. This is readily
-** computed via Fitch parsimony. The maximum a posteriori estimate of r is then
-** simply n_hat / V.
-**
-** This struct tracks these two quantities (n_hat and V) needed to compute
+** This struct tracks these two quantities (N and V) needed to compute
 ** the likelihood.
 */
 struct mk {
     // minimum number of character state changes needed
-    // to explain data. this is a ML estimate of n, computed
-    // via Fitch's downpass algorithm
+    // to explain data, computed via Fitch's downpass algorithm
     int n;
     // summed branch length over which changes occur.
     // ML estimate of rate is then just n / v.
@@ -90,9 +82,6 @@ static void mk_merge(struct mk *a, struct mk *b, struct mk *c)
 static double mk_loglikelihood(struct mk *mk)
 {
     double rate = mk->n / mk->v;
-    // note that we neglect the constant in the log likelihood
-    // function that comes from the number of character states
-    // (i.e, -1 * mk->n * log(nstates-1))
     return rate > 0 ? mk->n * log(rate) - rate * mk->v : 0;
 }
 
@@ -335,7 +324,6 @@ SEXP C_mk_shift(SEXP x, SEXP rtree)
             aic_w[i] /= w;
             backtrack(i, phy_root(phy), phy, aic_w[i], dp[i].mk.n / dp[i].mk.v,
                 rate, 0, 0);
-            //Rprintf("%d: %g\n", i, dp[i].score);
         }
     }
 
