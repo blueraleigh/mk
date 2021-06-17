@@ -209,7 +209,12 @@ static void backtrack(int index, struct phy_node *node, struct phy *phy,
             if (i && shift && node != phy_root(phy))
                 shift[(*i)++] = phy_node_index(node)+1;
 
+            // the shifted rate applies on all branches descended from this
+            // node, not on the branch subtending this node (which receives
+            // the background rate)
+            rate[phy_node_index(node)] += aic_w * bg_rate;
             cursor = phy_cursor_prepare(phy, node, ALL_NODES, PREORDER);
+            phy_cursor_step(cursor);
             while ((node = phy_cursor_step(cursor)) != 0)
             {
                 rate[phy_node_index(node)] += aic_w * (vec[index].mk.n / vec[index].mk.v);
