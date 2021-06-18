@@ -176,5 +176,5 @@ SEXP C_mk_loglikelihood(SEXP rate, SEXP model)
             branch_downpass(node, mk);
         }
     }
-    return ScalarReal(mk_loglikelihood(phy_root(mk->phy)), mk);
+    return ScalarReal(mk_loglikelihood(phy_root(mk->phy), mk));
 }
