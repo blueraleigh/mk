@@ -10,8 +10,8 @@
 #define minlikelihood  (1.0/twotothe256)
 #define minusminlikelihood -minlikelihood
 
-#define SCLK(i, j) mk->h[(i) + (j) * mk->n]
-#define DCLK(i, j) mk->g[(i) + (j) * mk->n]
+#define SCLK(i, j) mk->h[(j) + (i) * mk->k]
+#define DCLK(i, j) mk->g[(j) + (i) * mk->k]
 
 struct mk {
 
@@ -77,7 +77,7 @@ static void node_downpass(struct phy_node *node, struct mk *mk)
     for (i = 0; i < mk->k; ++i)
     {
         DCLK(u, i) = 1;
-        for (d = phy_node_lfdesc(node); d; d = phy_node_next(d))
+        for (d = phy_node_lfdesc(node); d != 0; d = phy_node_next(d))
         {
             v = phy_node_index(d);
             DCLK(u, i) *= SCLK(v, i);
@@ -111,7 +111,6 @@ static double mk_loglikelihood(struct phy_node *node, struct mk *mk)
     for (i = 0; i < mk->k; ++i)
     {
         lk += DCLK(u, i);
-        Rprintf("%g %d\n", DCLK(u, i), mk->lzd[u]);
     }
     return log(lk) - log(mk->k) + mk->lzd[u] * log(minlikelihood);
 }
@@ -120,7 +119,9 @@ static double mk_loglikelihood(struct phy_node *node, struct mk *mk)
 void C_mk_model_free(SEXP model)
 {
     struct mk *mk = (struct mk *)R_ExternalPtrAddr(model);
-    free(mk->mem);
+    free(mk->lzd);
+    free(mk->h);
+    free(mk->g);
     free(mk);
     R_ClearExternalPtr(model);
 }
@@ -131,16 +132,13 @@ SEXP C_mk_model(SEXP x, SEXP rtree)
     struct mk *mk = calloc(1, sizeof(*mk));
     struct phy *phy = (struct phy *)R_ExternalPtrAddr(rtree);
 
-    mk->k = INTEGER(getAttrib(x, R_DimSymbol))[1];
+    mk->k = INTEGER(getAttrib(x, R_DimSymbol))[0];
     mk->n = phy_nnode(phy);
     mk->phy = phy;
 
-    mk->mem = malloc(mk->n * sizeof(int) + 2 * mk->k * mk->n * sizeof(double));
-
-    mk->lzd = (int *)(mk->mem);
-    mk->h = (double *)(mk->lzd + mk->n);
-    mk->g = mk->h + mk->k * mk->n;
-
+    mk->lzd = calloc(mk->n, sizeof(int));
+    mk->h = calloc(mk->n * mk->k, sizeof(double));
+    mk->g = calloc(mk->n * mk->k, sizeof(double));
     memcpy(mk->g, REAL(x), mk->k * phy_ntip(phy) * sizeof(double));
 
     SEXP exptr = PROTECT(R_MakeExternalPtr(mk, R_NilValue, R_NilValue));

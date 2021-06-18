@@ -15,7 +15,7 @@ mk = function(x, phy) {
     g[idx+1] = 1
     g[which(!(tiplabels(phy) %in% names(x))), ] = 1
 
-    model = .Call(C_mk_model, g, phy)
+    model = .Call(C_mk_model, t(g), phy)
 
     function(rate) {
         .Call(C_mk_loglikelihood, as.numeric(rate), model)
