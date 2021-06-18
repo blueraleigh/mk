@@ -9,11 +9,15 @@
 #define CALLDEF(name, n)  {#name, (DL_FUNC) &name, n}
 
 
+SEXP C_mk_model(SEXP, SEXP);
+SEXP C_mk_loglikelihood(SEXP, SEXP);
 SEXP C_mk_shift(SEXP, SEXP);
 SEXP C_mk_shift_backtrack(SEXP, SEXP);
 
 
 static const R_CallMethodDef CallEntries[] = {
+    CALLDEF(C_mk_model, 2),
+    CALLDEF(C_mk_loglikelihood, 2),
     CALLDEF(C_mk_shift, 2),
     CALLDEF(C_mk_shift_backtrack, 2),
     {NULL, NULL, 0}
