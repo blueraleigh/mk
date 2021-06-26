@@ -194,6 +194,7 @@ static double asr_compute(
     int w;
     double len = phy_node_brlen(node);
     double lk = 0;
+    double sclk;
 
     struct phy_node *anc;
     struct phy_node *sib;
@@ -207,18 +208,18 @@ static double asr_compute(
 
         for (i = 0; i < mk->k; ++i)
         {
+            sclk = 1;
             for (sib = phy_node_next(node); sib != 0; sib = phy_node_next(sib))
             {
                 w = phy_node_index(sib);
-                
-                lk += UCLK(u, i) * SCLK(w, i) * pij(i, j, mk->k, mk->rate, len) * DCLK(v, j);
+                sclk *= SCLK(w, i);
             }
             for (sib = phy_node_prev(node); sib != 0; sib = phy_node_prev(sib))
             {
                 w = phy_node_index(sib);
-                
-                lk += UCLK(u, i) * SCLK(w, i) * pij(i, j, mk->k, mk->rate, len) * DCLK(v, j);
+                sclk *= SCLK(w, i);
             }
+            lk += UCLK(u, i) * sclk * pij(i, j, mk->k, mk->rate, len) * DCLK(v, j);
         }
 
     } else {
