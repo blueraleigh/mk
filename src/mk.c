@@ -116,6 +116,7 @@ static void node_uppass(struct phy_node *node, struct mk *mk)
     int scale = 1;
 
     double len;
+    double sclk;
 
     struct phy_node *sib;
     struct phy_node *anc = phy_node_anc(node);
@@ -137,22 +138,20 @@ static void node_uppass(struct phy_node *node, struct mk *mk)
         UCLK(v, i) = 0;
         for (j = 0; j < mk->k; ++j)
         {
+            sclk = 1;
             for (sib = phy_node_next(node); sib != 0; sib = phy_node_next(sib))
             {
                 w = phy_node_index(sib);
-
-                UCLK(v, i) += UCLK(u, j) * SCLK(w, j) * pij(j, i, mk->k, mk->rate, len);
-
+                sclk *= SCLK(w, j);
                 mk->lzu[v] += (i == 0) ? mk->lzu[u] + mk->lzd[w] : 0;
             }
             for (sib = phy_node_prev(node); sib != 0; sib = phy_node_prev(sib))
             {
                 w = phy_node_index(sib);
-
-                UCLK(v, i) += UCLK(u, j) * SCLK(w, j) * pij(j, i, mk->k, mk->rate, len);
-
+                sclk *= SCLK(w, j);
                 mk->lzu[v] += (i == 0) ? mk->lzu[u] + mk->lzd[w] : 0;
             }
+            UCLK(v, i) += UCLK(u, j) * sclk * pij(j, i, mk->k, mk->rate, len);
         }
     }
 
