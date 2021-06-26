@@ -134,6 +134,7 @@ static void node_uppass(struct phy_node *node, struct mk *mk)
 
     for (i = 0; i < mk->k; ++i)
     {
+        UCLK(v, i) = 0;
         for (j = 0; j < mk->k; ++j)
         {
             for (sib = phy_node_next(node); sib != 0; sib = phy_node_next(sib))
