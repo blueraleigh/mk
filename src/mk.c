@@ -143,13 +143,13 @@ static void node_uppass(struct phy_node *node, struct mk *mk)
             {
                 w = phy_node_index(sib);
                 sclk *= SCLK(w, j);
-                mk->lzu[v] += (i == 0) ? mk->lzu[u] + mk->lzd[w] : 0;
+                mk->lzu[v] += (i == 0 && j == 0) ? mk->lzu[u] + mk->lzd[w] : 0;
             }
             for (sib = phy_node_prev(node); sib != 0; sib = phy_node_prev(sib))
             {
                 w = phy_node_index(sib);
                 sclk *= SCLK(w, j);
-                mk->lzu[v] += (i == 0) ? mk->lzu[u] + mk->lzd[w] : 0;
+                mk->lzu[v] += (i == 0 && j == 0) ? mk->lzu[u] + mk->lzd[w] : 0;
             }
             UCLK(v, i) += UCLK(u, j) * sclk * pij(j, i, mk->k, mk->rate, len);
         }
