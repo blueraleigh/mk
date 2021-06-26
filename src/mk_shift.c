@@ -237,7 +237,7 @@ static void dp_init(int *x, int *n_edge, struct phy *phy)
     {
         if (phy_node_istip(node))
         {
-            n_edge[phy_node_index(node)] = 0;//1;
+            n_edge[phy_node_index(node)] = 0;
         }
         else
         {
