@@ -12,6 +12,9 @@
 SEXP C_mk_model(SEXP, SEXP);
 SEXP C_mk_loglikelihood(SEXP, SEXP);
 SEXP C_mk_marginal_asr(SEXP, SEXP);
+SEXP C_mk2_model(SEXP, SEXP);
+SEXP C_mk2_loglikelihood(SEXP, SEXP);
+SEXP C_mk2_marginal_asr(SEXP, SEXP);
 SEXP C_mk_shift(SEXP, SEXP);
 SEXP C_mk_shift_backtrack(SEXP, SEXP);
 
@@ -20,6 +23,9 @@ static const R_CallMethodDef CallEntries[] = {
     CALLDEF(C_mk_model, 2),
     CALLDEF(C_mk_loglikelihood, 2),
     CALLDEF(C_mk_marginal_asr, 2),
+    CALLDEF(C_mk2_model, 2),
+    CALLDEF(C_mk2_loglikelihood, 3),
+    CALLDEF(C_mk2_marginal_asr, 3),
     CALLDEF(C_mk_shift, 2),
     CALLDEF(C_mk_shift_backtrack, 2),
     {NULL, NULL, 0}
