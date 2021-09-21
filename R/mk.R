@@ -7,7 +7,7 @@
 #' @param phy An object of class \code{tree}.
 #' @return A function having class \code{mk} that returns the likelihood of 
 #' different input rates.
-#' @example
+#' @examples
 #' data(squamatatree)
 #' data(squamatareprod)
 #' phy = read.newick(text=squamatatree)
@@ -42,7 +42,7 @@ mk = function(x, phy) {
 #' @param lik A function having class \code{mk}.
 #' @return A function that returns marginal ancestral state probabilities for
 #' different input rates.
-#' @example
+#' @examples
 #' data(squamatatree)
 #' data(squamatareprod)
 #' phy = read.newick(text=squamatatree)
