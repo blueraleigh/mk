@@ -1,8 +1,18 @@
-#' @example
+#' Equal rates Markov process model of discrete character evolution
+#'
+#' Creates a likelihood function for fitting a fully symmetric Markov process  
+#' model of character evolution to categorical phenotype data.
+#'
+#' @param x A named vector of character state data having class \code{factor}.
+#' @param phy An object of class \code{tree}.
+#' @return A function having class \code{mk} that returns the likelihood of 
+#' different input rates.
+#' @examples
 #' data(squamatatree)
 #' data(squamatareprod)
 #' phy = read.newick(text=squamatatree)
 #' lik = mk(squamatareprod, phy)
+#' optimize(lik, c(0, 1), maximum=TRUE)
 mk = function(x, phy) {
     stopifnot(!is.null(names(x)))
     stopifnot(is.factor(x))
@@ -24,12 +34,21 @@ mk = function(x, phy) {
 }
 
 
-#' @example
+#' Ancestral character state reconstruction
+#'
+#' Calculate marginal ancestral state probabilities under a fully symmetric 
+#' Markov process model of character evolution.
+#'
+#' @param lik A function having class \code{mk}.
+#' @return A function that returns marginal ancestral state probabilities for
+#' different input rates.
+#' @examples
 #' data(squamatatree)
 #' data(squamatareprod)
 #' phy = read.newick(text=squamatatree)
 #' lik = mk(squamatareprod, phy)
-#' mk.asr(lik)(0.0015)
+#' fit = optimize(lik, c(0, 1), maximum=TRUE)
+#' mk.asr(lik)(fit$maximum)
 mk.asr = function(lik) {
     stopifnot(inherits(lik, "mk"))
     model = environment(lik)$model
