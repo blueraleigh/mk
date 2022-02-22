@@ -56,3 +56,38 @@ mk.asr = function(lik) {
         t(.Call(C_mk_marginal_asr, as.numeric(rate), model))
     }
 }
+
+
+#' Compute tip rates using parsimony
+#'
+#' The average tip rate approximates the maximum likelihood estimate of the
+#' rate parameter of a fully symmetric Markov model.
+#'
+#' @param x A named vector of character state data having type \code{factor} 
+#' or \code{integer}.
+#' @param phy An object of class \code{tree}.
+#' @return A vector of tip rates
+#' @examples
+#' data(squamatatree)
+#' data(squamatareprod)
+#' phy = read.newick(text=squamatatree)
+#' x = mk.tiprate(squamatareprod, phy)
+#' # average tiprate
+#' mean(x) # 0.002310957
+#' # maximum likelihood rate estimate
+#' optimize(mk(squamatareprod, phy), c(0,1), maximum=TRUE)$maximum # 0.001506275
+mk.tiprate = function(x, phy) {
+    n = Ntip(phy)
+    y = numeric(n)
+    pscore = parsimony::mpr.fitch(phy, x)$scores
+    for (i in 1:n) {
+        anc = ancestors(phy)[[i]]
+        for (j in 1:length(anc)) {
+            cont = pscore[anc[j]] - sum(pscore[children(phy, anc[j])])
+            # contrast scaled by contrast variance
+            d = cont / sum(brlens(phy)[children(phy, anc[j])])
+            y[i] = y[i] + d / 2^j
+        }
+    }
+    y
+}
