@@ -2,7 +2,7 @@ Package: mk
 Type: Package
 Title: Continuous-time Markov chain models of character evolution
 Version: 1.0
-Date: 2019-10-07
+Date: 2022-02-22
 Author: Michael C. Grundler
 Maintainer: Michael C. Grundler <mcgrundler@gmail.com>
 Description: Package mk implements various continuous-time Markov chain
