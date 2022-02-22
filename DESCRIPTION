@@ -8,6 +8,8 @@ Maintainer: Michael C. Grundler <mcgrundler@gmail.com>
 Description: Package mk implements various continuous-time Markov chain
   models of discrete character evolution.
 Depends: phylo, parsimony, R (>= 3.5.0)
+Suggests: knitr, rmarkdown
+VignetteBuilder: knitr
 LinkingTo: phylo
 NeedsCompilation: yes
 License: CC0

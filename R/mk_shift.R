@@ -22,7 +22,9 @@
 #' \dontrun{
 #' # For a more complete example see
 #' demo(mk.shift, package="mk", ask=TRUE)
-#' 
+#' # or
+#' vignette("mk.shift")
+#'
 #' data(squamatatree)
 #' data(squamatareprod)
 #' phy = read.newick(text=squamatatree)
