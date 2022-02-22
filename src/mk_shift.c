@@ -358,20 +358,13 @@ SEXP C_mk_shift_backtrack(SEXP index, SEXP rtree)
             REAL(rate), &j, shift);
     }
 
-    SEXP rates = PROTECT(allocVector(REALSXP, j+1));
-    SEXP shifts = PROTECT(allocVector(INTSXP, j+1));
-    INTEGER(shifts)[0] = phy_node_index(phy_root(phy)) + 1;
-    REAL(rates)[0] = REAL(rate)[phy_node_index(phy_root(phy))];
-    for (i = 1; i < j+1; ++i)
-    {
-        REAL(rates)[i] = REAL(rate)[shift[i-1]-1];
-        INTEGER(shifts)[i] = shift[i-1];
-    }
+    SEXP shifts = PROTECT(allocVector(INTSXP, j));
 
-    setAttrib(rates, R_NamesSymbol, shifts);
-    setAttrib(rate, install("rate"), rates);
+    memcpy(INTEGER(shifts), shift, j*sizeof(int));
 
-    UNPROTECT(3);
+    setAttrib(rate, install("shifts"), shifts);
+
+    UNPROTECT(2);
     return rate;
 }
 
