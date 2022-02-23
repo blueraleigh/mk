@@ -37,8 +37,8 @@ struct mk {
 
 
 struct dp {
-    /* number of shifted processes */
-    int n_proc;
+    /* number of terminals */
+    int ntl;
 
     /* only filled entries are valid */
     int filled;
@@ -129,7 +129,7 @@ static void downpass(struct phy *phy, int *n_edge)
         }
         else
             mk_push(0, phy_node_brlen(lf) + phy_node_brlen(rt), &(vec[0].mk));
-        vec[0].n_proc = 1;
+        vec[0].ntl = 1;
         vec[0].x = x;
         vec[0].logp = mk_loglikelihood(&(vec[0].mk));
         vec[0].score = vec[0].logp;
@@ -168,7 +168,7 @@ static void downpass(struct phy *phy, int *n_edge)
 
                 if (!vec[i].filled || score > vec[i].score)
                 {
-                    vec[i].n_proc = l_vec[j].n_proc + r_vec[k].n_proc;
+                    vec[i].ntl = l_vec[j].ntl + r_vec[k].ntl;
                     vec[i].filled = 1;
                     vec[i].score = score;
                     vec[i].j = j;
@@ -260,7 +260,7 @@ static void dp_init(int *x, int *n_edge, struct phy *phy)
         node = phy_node_get(phy, i);
         dp = (struct dp *)phy_node_data(node);
         dp[0].x = 1<<(x[i]-1);
-        dp[0].n_proc = 1;
+        dp[0].ntl = 1;
         dp[0].filled = 1;
         dp[0].j = -1;
         dp[0].k = -1;
@@ -298,13 +298,13 @@ SEXP C_mk_shift(SEXP x, SEXP rtree)
 
     double aic_score[n_edge[phy_node_index(phy_root(phy))]+1];
     double aic_w[n_edge[phy_node_index(phy_root(phy))]+1];
-    double min_aic_score = aic_score[0] = aic(dp[0].score, 2*dp[0].n_proc);
+    double min_aic_score = aic_score[0] = aic(dp[0].score, 2*dp[0].ntl);
 
     for (i = 1; i <= n_edge[phy_node_index(phy_root(phy))]; ++i)
     {
         if (dp[i].filled)
         {
-            aic_score[i] = aic(dp[i].score, 2*dp[i].n_proc);
+            aic_score[i] = aic(dp[i].score, 2*dp[i].ntl);
             if (aic_score[i] < min_aic_score)
             {
                 min_aic_score = aic_score[i];
